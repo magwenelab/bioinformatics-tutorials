@@ -1,0 +1,205 @@
+---
+title: "Seqkit tutorial"
+author: "Paul M. Magwene"
+date: last-modified
+format: 
+  html:
+    embed-resources: true
+    toc: true
+    number-sections: true
+    number-depth: 2
+editor: source
+---
+
+## Seqkit
+
+
+
+## Some preliminaries
+
+We're going to install a few additional software tools into your virtual machines that will be useful.
+
+### Learn a few commands to navigate around your VM
+
+* `pwd` -- prints name of your "working" directory (i.e. the directory you're currently in)
+* `ls` -- lists the contents of the working directory
+  - `ls ~` -- lists the contents of your "home" directory
+* `mkdir` -- make a new directory
+  - `mkdir foo`
+* `cd` -- change directory
+  - `cd foo`
+
+### Shortcuts for working with the file system on Unix based systems
+
+* `~` -- refers to the users home directory.  
+  * `cd ~` = change to my home directory
+  * `ls ~/*.txt` = list all files ending with the prefix `.txt` in your home directory
+* `..` -- the directory above the current directory (if it exists)
+  * `cd ..` = move up one level in the directory hierarchy.  For example if `pwd` is `/home/jsmith` then `cd ..` moves you to `/home'
+*  `/` -- the root directory of the file system
+  * `cd /data` = move to the data directory that is the subdirectory of the root
+  * `ls /` = list all files and directories in the root directory
+
+
+### Activate your Conda `genomics` environment
+
+```bash
+conda activate genomics
+```
+
+### Install unzip
+
+```bash
+conda install unzip
+```
+
+### Make a directory where we'll do our analyses
+
+```bash
+mkdir seqkit_tutorial
+```
+
+Now change to that directory:
+
+```bash
+cd seqkit_tutorial
+```
+
+
+
+## Download a genome and annotation to work with
+
+We're going to work with the genome of a *Cryptococcus neoformans* VNII strain which was isolated from an infected cockatoo and the bird's owner, as described in this paper:
+
+Sephton-Clark, P., McConnell, S. A., Grossman, N., Baker, R. P., Dragotakes, Q., Fan, Y., Fu, M. S., Gerbig, G., Greengo, S., Hardwick, J. M., Kulkarni, M., Levitz, S. M., Nosanchuk, J. D., Shoham, S., Smith, D. F. Q., Stempinski, P., Timp, W., Wear, M. P., Cuomo, C. A., & Casadevall, A. (2023). Similar evolutionary trajectories in an environmental Cryptococcus neoformans isolate after human and murine infection. Proceedings of the National Academy of Sciences of the United States of America, 120(2), e2217111120. https://doi.org/10.1073/pnas.2217111120
+
+The genome for this strain can be found here:
+
+https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_022832995.1/
+
+
+The NCBI assembly page makes it easy for us to download the assembly and associated files. Click the link that says "curl" and this will pop up a dialog box showing you a command to paste into your VM that will download the assembly and annotation files as a zip file.  I've reproduced that command below:
+
+```bash
+curl -OJX GET "https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCA_022832995.1/download?include_annotation_type=GENOME_FASTA,GENOME_GFF,RNA_FASTA,CDS_FASTA,PROT_FASTA,SEQUENCE_REPORT&filename=GCA_022832995.1.zip" -H "Accept: application/zip"
+```
+
+Once you've download the zip file you can unzip it using the following command:
+
+```bash
+unzip GCA_022832995.1.zip
+```
+
+If you type `ls` to list the files in your directory you should see:
+
+```bash
+GCA_022832995.1.zip  ncbi_dataset  README.md
+```
+
+Navigate to the folder `~/seqkit_tutorial/ncbi_dataset/data/GCA_022832995.1` and you should see the following:
+
+```bash
+cds_from_genomic.fna                      genomic.gff  sequence_report.jsonl
+GCA_022832995.1_ASM2283299v1_genomic.fna  protein.faa
+```
+
+The file `GCA_022832995.1_ASM2283299v1_genomic.fna` is the genome assembly and the file `genomic.gff` is the [GFF3 format](https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md) annotation file.
+
+
+## FASTA file format
+
+FASTA format is one of the most common formats for represent sequence data. The Zhang Lab has a nice concise description of the format [here](https://zhanggroup.org/FASTA/):
+
+```bash
+>SeqID01  optional description 01
+ATGCGAA
+>SeqID02  optional description 02
+TGCAGA
+```
+
+We can look at the first few lines of the VNII assembly FASTA file using the `head` command (there's also a `tail` command; can you guess what `tail` does?)
+
+
+```bash
+$ head GCA_022832995.1_ASM2283299v1_genomic.fna 
+```
+
+The output will look like:
+
+```bash
+>CP091247.1 Cryptococcus neoformans strain VNII chromosome 1
+CCCCTAacccctaaccccctaaccccctaacccccctaaccccctaaccccctaacccccctaacccccctaacccccta
+acccccta....
+```
+
+How many lines are in this file? Use the `wc` ("word count") command with the "-l" option:
+
+```bash
+$ wc -l GCA_022832995.1_ASM2283299v1_genomic.fna 
+```
+
+How many characters are in this file? 
+
+```bash
+$ wc -c GCA_022832995.1_ASM2283299v1_genomic.fna
+```
+
+
+
+
+## GFF3 file format
+
+The GFF3 file format is a widely used representation of genome annotation information. GFF stands for "Generic Feature Format".  Each line in a GFF file represents a "genomic feature" like a gene, or an intron, or a binding, etc.
+
+GFF3 files are plain text files, where each line (feature) has  9 tab-delimited columns that represent information about that feature:
+
+
+* Column 1: "seqid" -- The ID of the landmark used to establish the coordinate system for the current feature. e.g. "chrom1"
+
+* Column 2: "source" -- The source is a free text qualifier intended to describe the algorithm or operating procedure that generated this feature. Typically this is the name of a piece of software, such as "Genescan" or a database name, such as "Genbank." 
+
+* Column 3: "type" -- The type of the feature, e.g. "gene" or "exon".
+    
+* Columns 4 & 5: "start" and "end"-- The start and end coordinates of the feature are given in positive 1-based integer coordinates, relative to the landmark given in column one. Start is always less than or equal to end. 
+
+* Column 6: "score" -- The score of the feature, a floating point number. As in earlier versions of the format, the semantics of the score are ill-defined. It is strongly recommended that E-values be used for sequence similarity features, and that P-values be used for ab initio gene prediction features.
+
+* Column 7: "strand" -- The strand of the feature. + for positive strand (relative to the landmark), - for minus strand, and . for features that are not stranded. 
+
+* Column 8: "phase" -- see the GFF3 spec for more info.
+
+* Column 9: "attributes" -- A list of feature attributes in the format tag=value. Multiple tag=value pairs are separated by semicolons. See the GFF3 spec for more info.
+
+Let's take a look at the GFF file
+
+```bash
+$ head genomic.gff 
+```
+
+How many lines are there in the file?
+
+
+```bash
+$ wc -l genomic.gff
+```
+
+Some lines have comments, indicated by a "#" at the beginning of the line. We can find all such lines as follows. 
+
+```bash
+$ grep  "^#" genomic.gff 
+```
+
+To get all the lines that **do not** start with "#" we could do. I pipe the results to `less` because there's lots of output:
+
+
+```bash
+$ grep  -v "^#" genomic.gff | less
+```
+
+What are all the different types of features?
+
+```bash
+grep -v  "^#" genomic.gff | cut -f 3 | sort | uniq
+```
+
+

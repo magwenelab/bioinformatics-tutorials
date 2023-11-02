@@ -1,0 +1,365 @@
+---
+title: "SeqKit tutorial"
+author: "Paul M. Magwene"
+date: last-modified
+format: 
+  html:
+    embed-resources: true
+    toc: true
+    number-sections: true
+    number-depth: 2
+editor: source
+code-overflow: wrap
+---
+
+## SeqKit
+
+[SeqKit](https://bioinf.shenwei.me/seqkit/) is a command line tool for working with FASTQ/FASTA files. 
+
+SeqKit is composed of a bunch of [subcommands](https://bioinf.shenwei.me/seqkit/#subcommands) that carry out various useful analyses or manipulations from sequence data files. We'll illustrate various examples of using Seqkit to work with genome assembly files and association annotation in this tutorial.
+
+## Preliminaries
+
+### Activate your Conda `genomics` environment
+
+``` bash
+conda activate genomics
+```
+
+### Make a directory where we'll do our analyses
+
+``` bash
+mkdir seqkit_tutorial
+```
+
+Now change to that directory:
+
+``` bash
+cd seqkit_tutorial
+```
+
+
+
+## Download a genome and asscoiated annotation to work with
+
+We're going to work with genome data from FungiDB.
+
+You can access all the raw data files for FungiDB release 65 here:
+
+https://fungidb.org/common/downloads/release-65/
+
+Let's work with the C. gattii VGII reference strain R265, which can be found in the folder `CgattiiVGIIR265`:
+
+https://fungidb.org/common/downloads/release-65/CgattiiVGIIR265/
+
+The subfolders `fasta` and `gff` contain the FASTA file and GFF3 annotation for this genome respectively. We can download those using the `wget` command:
+
+``` bash
+$ wget https://fungidb.org/common/downloads/release-65/CgattiiVGIIR265/fasta/data/FungiDB-65_CgattiiVGIIR265_Genome.fasta
+```
+
+and
+
+``` bash
+$ wget https://fungidb.org/common/downloads/release-65/CgattiiVGIIR265/gff/data/FungiDB-65_CgattiiVGIIR265.gff
+```
+
+If you type `ls` to list the files in your directory you should see the following:
+
+``` bash
+$ ls 
+FungiDB-65_CgattiiVGIIR265_Genome.fasta  
+FungiDB-65_CgattiiVGIIR265.gff  
+```
+
+The file `FungiDB-65_CgattiiVGIIR265_Genome.fasta` is the genome assembly and the file `FungiDB-65_CgattiiVGIIR265.gff` is the [GFF3 format](https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md) annotation file.
+
+## FASTA file format
+
+FASTA format is one of the most common formats for represent sequence data. The Zhang Lab has a nice concise description of the format [here](https://zhanggroup.org/FASTA/):
+
+A simple two sequence FASTA file might look something like this:
+
+``` bash
+>SeqID01  optional description 01
+ATGCGAA
+>SeqID02  optional description 02
+TGCAGA
+```
+
+We can look at the first few lines of the VGII assembly FASTA file using the `head` command (there's also a `tail` command; can you guess what `tail` does?)
+
+``` bash
+$ head FungiDB-65_CgattiiVGIIR265_Genome.fasta  
+```
+
+The output will look like:
+
+``` bash
+>CP025759 | organism=Cryptococcus_gattii_VGII_R265 | version=2020-12-17 | length=2207848 | SO=chromosome
+CCTAACCCCTAACCCTAGGCCCCATCCGCCCTTTACTGCTACTTGCATATCCATTACACT
+CCCTCTGCATTCCAATCGCGTTCCGGGTACCCTCGGCCTTTCATTCATCCCGGCCAATAA
+...
+```
+
+How many lines are in this file? Use the `wc` ("word count") command with the "-l" option:
+
+``` bash
+$ wc -l FungiDB-65_CgattiiVGIIR265_Genome.fasta 
+```
+
+How many characters are in this file?
+
+``` bash
+$ wc -c FungiDB-65_CgattiiVGIIR265_Genome.fasta 
+```
+
+### Basic queries with SeqKit
+
+The SeqKit subcommand `stats` will return some summary statistics about the sequences in a FASTA file:
+
+```bash
+$ seqkit stats FungiDB-65_CgattiiVGIIR265_Genome.fasta 
+```
+
+We see there are 15 sequences in the file, ranging in size from ~31Kb to 1.1Mb.
+
+The SeqKit subcommand `seq` with the `-n` (names) flag will show us the header lines for all the sequences in the FASTA file:
+
+```bash
+$ seqkit seq -n  FungiDB-65_CgattiiVGIIR265_Genome.fasta
+```
+
+
+
+
+## GFF3 file format
+
+The [GFF3 file format](https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md) is a widely used representation of genome annotation information. GFF stands for "Generic Feature Format". Each line in a GFF file represents a "genomic feature" like a gene, or an intron, or a binding, etc.
+
+GFF3 files are plain text files, where each line (feature) has 9 tab-delimited columns that represent information about that feature:
+
+-   Column 1: "seqid" -- The ID of the landmark used to establish the coordinate system for the current feature. e.g. "chrom1"
+
+-   Column 2: "source" -- The source is a free text qualifier intended to describe the algorithm or operating procedure that generated this feature. Typically this is the name of a piece of software, such as "Genescan" or a database name, such as "Genbank."
+
+-   Column 3: "type" -- The type of the feature, e.g. "gene" or "exon".
+
+-   Columns 4 & 5: "start" and "end"-- The start and end coordinates of the feature are given in positive 1-based integer coordinates, relative to the landmark given in column one. Start is always less than or equal to end.
+
+-   Column 6: "score" -- The score of the feature, a floating point number. As in earlier versions of the format, the semantics of the score are ill-defined. It is strongly recommended that E-values be used for sequence similarity features, and that P-values be used for ab initio gene prediction features.
+
+-   Column 7: "strand" -- The strand of the feature. + for positive strand (relative to the landmark), - for minus strand, and . for features that are not stranded.
+
+-   Column 8: "phase" -- see the GFF3 spec for more info.
+
+-   Column 9: "attributes" -- A list of feature attributes in the format tag=value. Multiple tag=value pairs are separated by semicolons. See the GFF3 spec for more info.
+
+Let's take a look at the GFF file
+
+``` bash
+$ head FungiDB-65_CgattiiVGIIR265.gff 
+```
+
+How many lines are there in the file?
+
+``` bash
+$ wc -l FungiDB-65_CgattiiVGIIR265.gff 
+```
+
+Some lines have comments, indicated by a "\#" at the beginning of the line. We can find all such lines as follows.
+
+``` bash
+$ grep  "^#" FungiDB-65_CgattiiVGIIR265.gff 
+```
+
+To get all the lines that **do not** start with "\#" we could do. I pipe the results to `less` because there's lots of output:
+
+``` bash
+$ grep  -v "^#" FungiDB-65_CgattiiVGIIR265.gff | less
+```
+
+What are all the different types of features?
+
+``` bash
+grep -v  "^#" FungiDB-65_CgattiiVGIIR265.gff  | cut -f 3 | sort | uniq
+```
+
+## Genes of interest
+
+In the Magwene lab, one of the pathways we're particularly interested in is the cAMP-PKA pathway. The figure below, which illustrates some key genes in this pathway, is from a paper by Jim Kronstad's group ( doi: 10.5941/MYCO.2011.39.3.143):
+
+![Schematic overview of the cAMP-PKA pathway in Cryptococcus, from Kronstad et al. 2011](kronstad-cAMP-PKA.jpg){fig-align="center"  width="60%"}
+
+Let's see which of the core cAMP-PKA genes (in black) are found in our GFF annotation file, using `grep` to search for lines with the names of genes of interest.  The vertical bar between names `|` means "or":
+
+```bash
+$ grep -E "CAC1|PKR1|PKA|PDE|GPA1|GPR4|CRG2|GIB2" FungiDB-65_CgattiiVGIIR265.gff 
+```
+
+Let's redirect those to a new "mini-GFF" file which we'll name `cAMP_PKA_genes.gff`:
+
+```bash
+$ grep -E "CAC1|PKR1|PKA|PDE|GPA1|GPR4|CRG2|GIB2" FungiDB-65_CgattiiVGIIR265.gff > cAMP_PKA_genes.gff
+```
+
+
+## Extracting gene sequences of interest based on a GFF file
+
+```bash
+$ seqkit subseq --gtf cAMP_PKA_genes.gff FungiDB-65_CgattiiVGIIR265_Genome.fasta > cAMP_genes.fasta
+```
+
+Let's take a look at the output file and see what it looks like:
+
+```bash
+$ less cAMP_genes.fasta
+```
+
+And just the headers:
+
+```
+$ seqkit seq -n cAMP_genes.fasta
+
+CP025761_781225-782900:- 
+CP025761_1210508-1212457:+ 
+CP025765_290376-297560:- 
+CP025766_1012300-1013909:- 
+CP025766_153025-155707:- 
+CP025768_301470-303022:- 
+CP025767_446742-450297:+ 
+CP025760_1725768-1727248:+ 
+CP025760_375763-377465:- 
+```
+
+Our FASTA file has a sequence for each of our genes of interest. We see that the `subseq` command creates a header for each sequence feature that is of the form: "seqid_start-end:strand".  This is logical, though perhaps not ideal as we can't figure out at a glance which sequence corresponds to which gene unless we deconvolve the seqids (chromosomes) and coordinates.  Below I show how to fix this.
+
+
+
+### Fixing Sequence IDs in the generated files (advanced)
+
+Rather than just region-based naming scheme in our generated FASTA file, it would be better to include the actual feature IDs from the 9th column of the GFF file.  However, `subseq` does not have a built-in flag to support this. Instead we'll fix this issue with some command line kung fu.
+
+First, create a file that maps the regions-base IDs as created by `subseq`, to feature IDs given in the  GFF file. We'll do this using Awk. It would probably be best put to put the following in a script, but here I'm showing how to do it  at the command line. This is pretty advanced.
+
+```bash
+$ awk -F'\t' -e 'match($9,"ID=([^;]+)",arr){print $1"_"$4"-"$5":"$7, arr[1]}' cAMP_PKA_genes.gff | tr " " "\t" > cAMP_PKA_region_to_name.txt
+```
+
+Then use the `seqkit replace` command to fix sequence IDs:
+
+```bash
+$ seqkit replace -p '^(\S+)(.+?)$' -r '{kv} $1' -k cAMP_PKA_region_to_name.txt cAMP_genes.fasta > cAMP_genes_better.fasta
+```
+
+The above command is not at all intuitive! Basically we're using regular expressions and a key-value mapping file to replace the sequence names with a nicer format.
+
+Now the headers look like this:
+
+```bash
+$ seqkit seq -n cAMP_genes_better.fasta 
+
+CNBG_0931 CP025760_1725768-1727248:+
+CNBG_4606 CP025760_375763-377465:-
+CNBG_1346 CP025761_781225-782900:-
+CNBG_1508 CP025761_1210508-1212457:+
+CNBG_2383 CP025765_290376-297560:-
+CNBG_2563 CP025766_1012300-1013909:-
+CNBG_2882 CP025766_153025-155707:-
+CNBG_4396 CP025768_301470-303022:-
+CNBG_5996 CP025767_446742-450297:+
+```
+
+Now our sequence features in our generated FASTA file start with standard names that we can look up in FungiDB.
+
+
+## Some basic Unix commands
+
+-   `pwd` -- prints name of your "working" directory (i.e. the directory you're currently in)
+-   `ls` -- lists the contents of the working directory
+    -   `ls ~` -- lists the contents of your "home" directory
+-   `mkdir` -- make a new directory
+    -   `mkdir foo`
+-   `cd` -- change directory
+    -   `cd foo`
+    
+* `less` -- a "pager" program for reading text one page at a time ("less is a better more"!). Useful when output spans multiple pages.  To advance/go back a page use `<space>/b` and to quit type `q`.
+    - `less cAMP_genes.fasta`
+    - `ls -l /bin/ | less`  -- notice that that the `ls` command here generates a long list of files. `less` helps us read the output one page at a time.
+   
+* `head` and `tail` -- output the first/last part of a file.  Both default to output 10 lines.
+    - `head cAMP_genes.fastaf`
+    - `tail cAMP_genes.fasta`
+    - `head -n 5 cAMP_genes.fasta`: show the first 5 lines of the file
+
+* `echo` -- send input text to standard output (stdout)
+  - `echo Hello World!`
+  - `echo -e 'Hello\nWorld!'`
+    - Here we wrap the input in quotes so we can use the "backslash escape" representation of a newline (`\n`). The `-e` argument tells `echo` to interpret backsplash escapes appropriately. Another common backslash escape is `\t` to represent a tab character.
+  - `echo Hello World > hello.txt`: send text to a new file `hello.txt` using the redirection operator.
+  - `echo Hello World | wc -m`: send text to another command using the pipe operator (see `wc` below)
+
+
+* `cat` -- copies file(s) to stdout 
+  - `cat file.txt`: write file to stdout
+  - `cat file1.txt file2.txt > file1and2.txt`: concatenate two files
+
+* `wc` -- counts bytes, characters, words, or lines
+  - `wc -l file.txt`: count the number of lines in `file.txt`
+  - `wc -m file.txt`: count the number of characters in `file.txt`
+  
+* `tr` -- translate (substitute) or delete characters in input. Note that unlike most commands `tr` will not take a file as an argument, so typically you would use `cat` to send the contents of a file through `tr`
+  - `echo ATGCAA | tr A a`: substitute lower case "a" for uppercase "A"
+  - `echo ATGCAA | tr -d A`: delete all "A" characters
+  - `echo ATGCAA | tr ATGC TACG`: substitute each character in the first set ("ATGC") with the matching character in the second set ("TAGC"). 
+  
+* `rev` -- reverse input
+  - `echo ATGCAAA | rev`
+  - `echo ATGCAAA | rev | tr ATGC TACG` -- why might this be useful when working with representations of nucleotides?
+  
+  
+* `cut` -- removes sections (bytes, characters, or fields) from input
+  - For this example create a file (`columns.txt`) with the following command (`\t` = TAB character, `\n` = newline character): 
+    `echo -e 'one\ttwo\tthree\nfour\tfive\tsix' > columns.txt`
+  If you open the file you will see it is formatted like this:
+    ```
+    one     two     three
+    four    five    six
+    ```
+  - `cut -f 2 columns.txt`: get the second column (`cut` assumes columns are separated by tabs by default)
+  - `cut -f1,3 columns.txt` get first and third column
+  
+* `fold` -- wrap lines to the specified with, printing to stdout
+  - `fold -w 5 file.txt`:
+  - `echo 12345 | fold -w 1`
+  
+* `sort` -- sorts lines of input
+  - `sort file.txt` --  sort line in `file.txt`
+  - `echo -e 'foo\nbar\nbaz\qux' | sort` 
+  - `sort -k 3 -n columns.txt` -- sort numerically on the 3rd field (column) of the data
+  - `sort -k 3 -n --debug columns.txt` -- the `--debug` option is useful when you're getting unexpected results. This highlights the field that `sort` is using in each line to do the sorting.
+    - See [this page](./unexpected-sorting.md) and the [GNU FAQ](https://www.gnu.org/software/coreutils/faq/coreutils-faq.html#Sort-does-not-sort-in-normal-order_0021) if you've doubled and triple checked your commands and yet getting unexpected sorting results
+
+* `uniq` -- report/omit adjacent repeated lines.  The adjacency requirement means you usually need to sort the input first.
+  - `echo 1235231443551 | fold -w 1 | sort | uniq`: get unique digits from input. Also try this without sorting first to see the difference.
+  
+
+### Shortcuts for working with the file system on Unix based systems
+
+-   `~` -- refers to the users home directory.
+    -   `cd ~` = change to my home directory
+    -   `ls ~/*.txt` = list all files ending with the prefix `.txt` in your home directory
+-   `..` -- the directory above the current directory (if it exists)
+    -   `cd ..` = move up one level in the directory hierarchy. For example if `pwd` is `/home/jsmith` then `cd ..` moves you to \`/home'
+-   `/` -- the root directory of the file system
+-   `cd /data` = move to the data directory that is the subdirectory of the root
+-   `ls /` = list all files and directories in the root directory
+
+
+
+
+
+
+
+
+
