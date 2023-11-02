@@ -3031,9 +3031,9 @@ vertical-align: -.125em;
   <li><a href="#turn-on-your-vm" id="toc-turn-on-your-vm" class="nav-link" data-scroll-target="#turn-on-your-vm">Turn on your VM</a></li>
   <li><a href="#ssh-to-your-vm" id="toc-ssh-to-your-vm" class="nav-link" data-scroll-target="#ssh-to-your-vm">SSH to your VM</a></li>
   <li><a href="#activate-your-conda-genomics-environment" id="toc-activate-your-conda-genomics-environment" class="nav-link" data-scroll-target="#activate-your-conda-genomics-environment">Activate your Conda <code>genomics</code> environment</a></li>
-  <li><a href="#make-a-directory-where-well-do-our-analyses" id="toc-make-a-directory-where-well-do-our-analyses" class="nav-link" data-scroll-target="#make-a-directory-where-well-do-our-analyses">Make a directory where we’ll do our analyses</a></li>
+  <li><a href="#make-a-directory-for-your-analyses" id="toc-make-a-directory-for-your-analyses" class="nav-link" data-scroll-target="#make-a-directory-for-your-analyses">Make a directory for your analyses</a></li>
   </ul></li>
-  <li><a href="#download-a-genome-and-asscoiated-annotation-to-work-with" id="toc-download-a-genome-and-asscoiated-annotation-to-work-with" class="nav-link" data-scroll-target="#download-a-genome-and-asscoiated-annotation-to-work-with"><span class="header-section-number">3</span> Download a genome and asscoiated annotation to work with</a></li>
+  <li><a href="#download-a-genome-and-associated-annotation" id="toc-download-a-genome-and-associated-annotation" class="nav-link" data-scroll-target="#download-a-genome-and-associated-annotation"><span class="header-section-number">3</span> Download a genome and associated annotation</a></li>
   <li><a href="#fasta-file-format" id="toc-fasta-file-format" class="nav-link" data-scroll-target="#fasta-file-format"><span class="header-section-number">4</span> FASTA file format</a>
   <ul class="collapse">
   <li><a href="#basic-queries-with-seqkit" id="toc-basic-queries-with-seqkit" class="nav-link" data-scroll-target="#basic-queries-with-seqkit">Basic queries with SeqKit</a></li>
@@ -3103,17 +3103,16 @@ vertical-align: -.125em;
 <h3 class="anchored" data-anchor-id="activate-your-conda-genomics-environment">Activate your Conda <code>genomics</code> environment</h3>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate genomics</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="make-a-directory-where-well-do-our-analyses" class="level3">
-<h3 class="anchored" data-anchor-id="make-a-directory-where-well-do-our-analyses">Make a directory where we’ll do our analyses</h3>
+<section id="make-a-directory-for-your-analyses" class="level3">
+<h3 class="anchored" data-anchor-id="make-a-directory-for-your-analyses">Make a directory for your analyses</h3>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> seqkit_tutorial</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Now change to that directory:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> seqkit_tutorial</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
-<section id="download-a-genome-and-asscoiated-annotation-to-work-with" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="download-a-genome-and-asscoiated-annotation-to-work-with"><span class="header-section-number">3</span> Download a genome and asscoiated annotation to work with</h2>
-<p>We’re going to work with genome data from FungiDB.</p>
-<p>You can access all the raw data files for FungiDB release 65 here:</p>
+<section id="download-a-genome-and-associated-annotation" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="download-a-genome-and-associated-annotation"><span class="header-section-number">3</span> Download a genome and associated annotation</h2>
+<p>We’re going to work with genome data from <a href>FungiDB</a>. You can access all the raw data files for FungiDB release 65 here:</p>
 <p>https://fungidb.org/common/downloads/release-65/</p>
 <p>Let’s work with the C. gattii VGII reference strain R265, which can be found in the folder <code>CgattiiVGIIR265</code>:</p>
 <p>https://fungidb.org/common/downloads/release-65/CgattiiVGIIR265/</p>
@@ -3129,7 +3128,7 @@ vertical-align: -.125em;
 </section>
 <section id="fasta-file-format" class="level2" data-number="4">
 <h2 data-number="4" class="anchored" data-anchor-id="fasta-file-format"><span class="header-section-number">4</span> FASTA file format</h2>
-<p>FASTA format is one of the most common formats for represent sequence data. The Zhang Lab has a nice concise description of the format <a href="https://zhanggroup.org/FASTA/">here</a>:</p>
+<p>FASTA format is one of the most common formats for representing sequence data. The Zhang Lab has a nice concise description of the format <a href="https://zhanggroup.org/FASTA/">here</a>:</p>
 <p>A simple two sequence FASTA file might look something like this:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span>SeqID01  <span class="ex">optional</span> description 01</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ATGCGAA</span></span>
@@ -3142,7 +3141,7 @@ vertical-align: -.125em;
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">CCTAACCCCTAACCCTAGGCCCCATCCGCCCTTTACTGCTACTTGCATATCCATTACACT</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">CCCTCTGCATTCCAATCGCGTTCCGGGTACCCTCGGCCTTTCATTCATCCCGGCCAATAA</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>How many lines are in this file? Use the <code>wc</code> (“word count”) command with the “-l” option:</p>
+<p>How many lines are in this file? Use the <code>wc</code> (“word count”) command with the <code>-l</code> option:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> wc <span class="at">-l</span> FungiDB-65_CgattiiVGIIR265_Genome.fasta </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>How many characters are in this file?</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> wc <span class="at">-c</span> FungiDB-65_CgattiiVGIIR265_Genome.fasta </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -3150,14 +3149,14 @@ vertical-align: -.125em;
 <h3 class="anchored" data-anchor-id="basic-queries-with-seqkit">Basic queries with SeqKit</h3>
 <p>The SeqKit subcommand <code>stats</code> will return some summary statistics about the sequences in a FASTA file:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> seqkit stats FungiDB-65_CgattiiVGIIR265_Genome.fasta </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>We see there are 15 sequences in the file, ranging in size from ~31Kb to 1.1Mb.</p>
+<p>We see there are 15 sequences in the file, ranging in size from ~31 Kb to 1.1 Mb.</p>
 <p>The SeqKit subcommand <code>seq</code> with the <code>-n</code> (names) flag will show us the header lines for all the sequences in the FASTA file:</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> seqkit seq <span class="at">-n</span>  FungiDB-65_CgattiiVGIIR265_Genome.fasta</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="gff3-file-format" class="level2" data-number="5">
 <h2 data-number="5" class="anchored" data-anchor-id="gff3-file-format"><span class="header-section-number">5</span> GFF3 file format</h2>
-<p>The <a href="https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md">GFF3 file format</a> is a widely used representation of genome annotation information. GFF stands for “Generic Feature Format”. Each line in a GFF file represents a “genomic feature” like a gene, or an intron, or a binding, etc.</p>
+<p>The <a href="https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md">GFF3 file format</a> is a widely used representation of genome annotation information. GFF stands for “Generic Feature Format”. Each line in a GFF file represents a “sequence feature” like a gene, an exon, a binding site, etc.</p>
 <p>GFF3 files are plain text files, where each line (feature) has 9 tab-delimited columns that represent information about that feature:</p>
 <ul>
 <li><p>Column 1: “seqid” – The ID of the landmark used to establish the coordinate system for the current feature. e.g. “chrom1”</p></li>

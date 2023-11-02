@@ -42,7 +42,7 @@ Replace `netid` with your personal NetID and `XXXX` with the appropriate address
 conda activate genomics
 ```
 
-### Make a directory where we'll do our analyses
+### Make a directory for your analyses
 
 ``` bash
 mkdir seqkit_tutorial
@@ -56,9 +56,9 @@ cd seqkit_tutorial
 
 
 
-## Download a genome and asscoiated annotation to work with
+## Download a genome and associated annotation
 
-We're going to work with genome data from FungiDB. You can access all the raw data files for FungiDB release 65 here:
+We're going to work with genome data from [FungiDB](). You can access all the raw data files for FungiDB release 65 here:
 
 https://fungidb.org/common/downloads/release-65/
 
@@ -90,7 +90,7 @@ The file `FungiDB-65_CgattiiVGIIR265_Genome.fasta` is the genome assembly and th
 
 ## FASTA file format
 
-FASTA format is one of the most common formats for represent sequence data. The Zhang Lab has a nice concise description of the format [here](https://zhanggroup.org/FASTA/):
+FASTA format is one of the most common formats for representing sequence data. The Zhang Lab has a nice concise description of the format [here](https://zhanggroup.org/FASTA/):
 
 A simple two sequence FASTA file might look something like this:
 
@@ -116,7 +116,7 @@ CCCTCTGCATTCCAATCGCGTTCCGGGTACCCTCGGCCTTTCATTCATCCCGGCCAATAA
 ...
 ```
 
-How many lines are in this file? Use the `wc` ("word count") command with the "-l" option:
+How many lines are in this file? Use the `wc` ("word count") command with the `-l` option:
 
 ``` bash
 $ wc -l FungiDB-65_CgattiiVGIIR265_Genome.fasta 
@@ -136,7 +136,7 @@ The SeqKit subcommand `stats` will return some summary statistics about the sequ
 $ seqkit stats FungiDB-65_CgattiiVGIIR265_Genome.fasta 
 ```
 
-We see there are 15 sequences in the file, ranging in size from ~31Kb to 1.1Mb.
+We see there are 15 sequences in the file, ranging in size from ~31 Kb to 1.1 Mb.
 
 The SeqKit subcommand `seq` with the `-n` (names) flag will show us the header lines for all the sequences in the FASTA file:
 
@@ -149,7 +149,7 @@ $ seqkit seq -n  FungiDB-65_CgattiiVGIIR265_Genome.fasta
 
 ## GFF3 file format
 
-The [GFF3 file format](https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md) is a widely used representation of genome annotation information. GFF stands for "Generic Feature Format". Each line in a GFF file represents a "genomic feature" like a gene, or an intron, or a binding, etc.
+The [GFF3 file format](https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md) is a widely used representation of genome annotation information. GFF stands for "Generic Feature Format". Each line in a GFF file represents a "sequence feature" like a gene, an exon, a binding site, etc.
 
 GFF3 files are plain text files, where each line (feature) has 9 tab-delimited columns that represent information about that feature:
 
