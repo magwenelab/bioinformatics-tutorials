@@ -58,13 +58,13 @@ cd seqkit_tutorial
 
 ## Download a genome and associated annotation
 
-We're going to work with genome data from [FungiDB](). You can access all the raw data files for FungiDB release 65 here:
+We're going to work with genome data from [FungiDB](https://fungidb.org). You can access all the raw data files for FungiDB release 65 here:
 
-https://fungidb.org/common/downloads/release-65/
+<https://fungidb.org/common/downloads/release-65/>
 
 Let's work with the C. gattii VGII reference strain R265, which can be found in the folder `CgattiiVGIIR265`:
 
-https://fungidb.org/common/downloads/release-65/CgattiiVGIIR265/
+<https://fungidb.org/common/downloads/release-65/CgattiiVGIIR265/>
 
 The subfolders `fasta` and `gff` contain the FASTA file and GFF3 annotation for this genome respectively. We can download those using the `wget` command:
 
