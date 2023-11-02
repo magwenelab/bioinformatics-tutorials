@@ -3044,7 +3044,8 @@ vertical-align: -.125em;
   <ul class="collapse">
   <li><a href="#fixing-sequence-ids-in-the-generated-files-advanced" id="toc-fixing-sequence-ids-in-the-generated-files-advanced" class="nav-link" data-scroll-target="#fixing-sequence-ids-in-the-generated-files-advanced">Fixing Sequence IDs in the generated files (advanced)</a></li>
   </ul></li>
-  <li><a href="#some-basic-unix-commands" id="toc-some-basic-unix-commands" class="nav-link" data-scroll-target="#some-basic-unix-commands"><span class="header-section-number">8</span> Some basic Unix commands</a>
+  <li><a href="#searching-for-sequences-of-interest" id="toc-searching-for-sequences-of-interest" class="nav-link" data-scroll-target="#searching-for-sequences-of-interest"><span class="header-section-number">8</span> Searching for sequences of interest</a></li>
+  <li><a href="#some-basic-unix-commands" id="toc-some-basic-unix-commands" class="nav-link" data-scroll-target="#some-basic-unix-commands"><span class="header-section-number">9</span> Some basic Unix commands</a>
   <ul class="collapse">
   <li><a href="#shortcuts-for-working-with-the-file-system-on-unix-based-systems" id="toc-shortcuts-for-working-with-the-file-system-on-unix-based-systems" class="nav-link" data-scroll-target="#shortcuts-for-working-with-the-file-system-on-unix-based-systems">Shortcuts for working with the file system on Unix based systems</a></li>
   </ul></li>
@@ -3234,8 +3235,20 @@ CP025760_375763-377465:- </code></pre>
 <p>Now our sequence features in our generated FASTA file start with standard names that we can look up in FungiDB.</p>
 </section>
 </section>
-<section id="some-basic-unix-commands" class="level2" data-number="8">
-<h2 data-number="8" class="anchored" data-anchor-id="some-basic-unix-commands"><span class="header-section-number">8</span> Some basic Unix commands</h2>
+<section id="searching-for-sequences-of-interest" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="searching-for-sequences-of-interest"><span class="header-section-number">8</span> Searching for sequences of interest</h2>
+<p>The <code>seqkit locate</code> command can be used to search for sequences that match a specified pattern. Let’s do an example, based on a predicted binding site for the transcription factor BZP4.</p>
+<p>Our predicted binding site motif is “CACA[T,G]GC[T,A]TA” where the bits in square brackets indicating “one of these” (i.e. [T,G] = either T or G). Here’s how we could search the R265 genome for matches to this motif:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ex">seqkit</span> locate  <span class="at">-i</span> <span class="at">-r</span> <span class="at">-p</span> <span class="st">&quot;CACA[TG]GC[TA]TA&quot;</span> FungiDB-65_CgattiiVGIIR265_Genome.fasta</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The first few lines of the output look like this. The columns are fairly self explanatory, giving details such as which sequence the match was found on, the start and end coordinates of the match, and the actual matching sub-sequence that was matched on. Notice that the matched subsequences are not identical because we allowed for variability at two positions.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ex">seqID</span>   patternName pattern strand  start   end matched</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="ex">CP025759</span>    CACA<span class="pp">[</span><span class="ss">TG</span><span class="pp">]</span>GC<span class="pp">[</span><span class="ss">TA</span><span class="pp">]</span>TA    CACA<span class="pp">[</span><span class="ss">TG</span><span class="pp">]</span>GC<span class="pp">[</span><span class="ss">TA</span><span class="pp">]</span>TA    +   203084  203093  CACAGGCATA</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="ex">CP025759</span>    CACA<span class="pp">[</span><span class="ss">TG</span><span class="pp">]</span>GC<span class="pp">[</span><span class="ss">TA</span><span class="pp">]</span>TA    CACA<span class="pp">[</span><span class="ss">TG</span><span class="pp">]</span>GC<span class="pp">[</span><span class="ss">TA</span><span class="pp">]</span>TA    +   282115  282124  CACATGCATA</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="ex">CP025759</span>    CACA<span class="pp">[</span><span class="ss">TG</span><span class="pp">]</span>GC<span class="pp">[</span><span class="ss">TA</span><span class="pp">]</span>TA    CACA<span class="pp">[</span><span class="ss">TG</span><span class="pp">]</span>GC<span class="pp">[</span><span class="ss">TA</span><span class="pp">]</span>TA    +   384563  384572  CACAGGCATA</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="ex">CP025759</span>    CACA<span class="pp">[</span><span class="ss">TG</span><span class="pp">]</span>GC<span class="pp">[</span><span class="ss">TA</span><span class="pp">]</span>TA    CACA<span class="pp">[</span><span class="ss">TG</span><span class="pp">]</span>GC<span class="pp">[</span><span class="ss">TA</span><span class="pp">]</span>TA    +   492415  492424  CACAGGCTTA</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="some-basic-unix-commands" class="level2" data-number="9">
+<h2 data-number="9" class="anchored" data-anchor-id="some-basic-unix-commands"><span class="header-section-number">9</span> Some basic Unix commands</h2>
 <ul>
 <li><code>pwd</code> – prints name of your “working” directory (i.e. the directory you’re currently in)</li>
 <li><code>ls</code> – lists the contents of the working directory

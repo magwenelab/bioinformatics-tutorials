@@ -286,6 +286,29 @@ CNBG_5996 CP025767_446742-450297:+
 
 Now our sequence features in our generated FASTA file start with standard names that we can look up in FungiDB.
 
+## Searching for sequences of interest
+
+The `seqkit locate` command can be used to search for sequences that match a specified pattern. Let's do an example, based on a predicted binding site for the transcription factor BZP4.
+
+Our predicted binding site motif is "CACA[T,G]GC[T,A]TA" where the bits in square brackets indicating "one of these" (i.e. [T,G] = either T or G). Here's how we could search the R265 genome for matches to this motif:
+
+
+```bash
+seqkit locate  -i -r -p "CACA[TG]GC[TA]TA" FungiDB-65_CgattiiVGIIR265_Genome.fasta
+```
+
+The first few lines of the output look like this. The columns are fairly self explanatory, giving details such as which sequence the match was found on, the start and end coordinates of the match, and the actual matching sub-sequence that was matched on. Notice that the matched subsequences are not identical because we allowed for variability at two positions.
+
+```bash
+seqID	patternName	pattern	strand	start	end	matched
+CP025759	CACA[TG]GC[TA]TA	CACA[TG]GC[TA]TA	+	203084	203093	CACAGGCATA
+CP025759	CACA[TG]GC[TA]TA	CACA[TG]GC[TA]TA	+	282115	282124	CACATGCATA
+CP025759	CACA[TG]GC[TA]TA	CACA[TG]GC[TA]TA	+	384563	384572	CACAGGCATA
+CP025759	CACA[TG]GC[TA]TA	CACA[TG]GC[TA]TA	+	492415	492424	CACAGGCTTA
+```
+
+
+
 
 ## Some basic Unix commands
 
