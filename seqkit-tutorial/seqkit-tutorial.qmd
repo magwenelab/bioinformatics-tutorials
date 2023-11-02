@@ -20,6 +20,22 @@ SeqKit is composed of a bunch of [subcommands](https://bioinf.shenwei.me/seqkit/
 
 ## Preliminaries
 
+### Turn on your VM
+
+Navigate to the [Duke VCM Manager](https://vcm.duke.edu/) and make sure your VM is powered on.
+
+### SSH to your VM
+
+Open your Terminal (MacOS) or Powershell (Windows) program and use SSH to connect to your VM:
+
+```bash
+ssh netid@vcm-XXXX.vm.duke.edu 
+```
+
+Replace `netid` with your personal NetID and `XXXX` with the appropriate address of your VM hostname. Login with your NetID password. Remember that when you enter your password it will not echo any characters to your screen!
+
+
+
 ### Activate your Conda `genomics` environment
 
 ``` bash
@@ -42,9 +58,7 @@ cd seqkit_tutorial
 
 ## Download a genome and asscoiated annotation to work with
 
-We're going to work with genome data from FungiDB.
-
-You can access all the raw data files for FungiDB release 65 here:
+We're going to work with genome data from FungiDB. You can access all the raw data files for FungiDB release 65 here:
 
 https://fungidb.org/common/downloads/release-65/
 
